@@ -8,7 +8,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const apiUrl = process.env.NEXT_PUBLIC_MODEL_API;
 const airQualityUrl = process.env.NEXT_PUBLIC_AIRQUALITY;
 
-interface DataObject {
+export interface DataObject {
   [key: string]: number;
 }
 
