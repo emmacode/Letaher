@@ -1,7 +1,6 @@
-'use client';
+"use client";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useEffect, useState } from "react";
-
 
 interface DataProps {
   id?: string | number;
@@ -9,11 +8,13 @@ interface DataProps {
   gas_value?: number;
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const airQualityUrl = process.env.NEXT_PUBLIC_AIRQUALITY;
 
 export default function BinStatusPage() {
   const [data, setData] = useState<DataProps | undefined>(undefined);
-  const [refresh, setRefresh] = useState('');
+  const [airQuality, setAirQuality] = useState<number | undefined>(undefined);
+  const [refresh, setRefresh] = useState("");
   useEffect(() => {
     const doThis = async () => {
       const response = await fetch(`${apiUrl}/both_sensors/get.php`);
@@ -24,25 +25,43 @@ export default function BinStatusPage() {
           setRefresh(`${Date.now}`);
         }, 5000);
       });
-    }
+    };
+
+    const fetchAirQuality = async () => {
+      const response = await fetch(`${airQualityUrl}`);
+      const data = await response.json();
+      const aqi = data?.data?.aqi;
+      setAirQuality(aqi);
+    };
+
+    fetchAirQuality();
     doThis();
   }, [refresh]);
+  
   return (
     <DefaultLayout>
-      <div className = "flex justify-around box-border">
-          <div className="flex flex-col justify-center items-center flex-auto max-w-sm bg-white h-72 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100">
-            <h1 className = 'text-2xl font-bold text-black my-2.5 text-center tracking-tight text-gray-900 dark'>Bin status</h1>
-            <div className='flex items-center justify-center text-black text-center w-32 h-32 rounded-full border-4 border-yellow-900 bg-yellow-900 my-4'>
-              <h1 className = 'text-white text-xl text-lg'>{data?.filled_level?.toFixed(2)}%</h1>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center items-center flex-auto max-w-sm bg-white h-72 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100">
-            <h1 className = 'text-2xl font-bold text-black my-2.5 text-center tracking-tight text-gray-900 dark'>Air Quality Indicator</h1>
-            <div className = 'flex items-center justify-center text-black text-center w-32 h-32 rounded-full border-4 border-yellow-900 bg-yellow-900 my-4'>
-              <h1 className = 'text-white text-xl text-center'>{data?.gas_value?.toFixed(2)}%</h1>
-              </div>
+      <div className="box-border flex justify-around">
+        <div className="border-gray-200 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 flex h-72 max-w-sm flex-auto flex-col items-center justify-center rounded-lg border bg-white shadow">
+          <h1 className="text-gray-900 dark my-2.5 text-center text-2xl font-bold tracking-tight text-black">
+            Bin status
+          </h1>
+          <div className="my-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-yellow-900 bg-yellow-900 text-center text-black">
+            <h1 className="text-lg text-xl text-white">
+              {data?.filled_level?.toFixed(2)}%
+            </h1>
           </div>
         </div>
+        <div className="border-gray-200 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 flex h-72 max-w-sm flex-auto flex-col items-center justify-center rounded-lg border bg-white shadow">
+          <h1 className="text-gray-900 dark my-2.5 text-center text-2xl font-bold tracking-tight text-black">
+            Air Quality Indicator
+          </h1>
+          <div className="my-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-yellow-900 bg-yellow-900 text-center text-black">
+            <h1 className="text-center text-xl text-white">
+              {airQuality?.toFixed(2)}%
+            </h1>
+          </div>
+        </div>
+      </div>
     </DefaultLayout>
   );
 }
