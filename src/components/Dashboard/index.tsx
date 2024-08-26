@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
+import { DataProps } from "@/app/bin-status/page";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const apiUrl = process.env.NEXT_PUBLIC_MODEL_API;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const modelapiUrl = process.env.NEXT_PUBLIC_MODEL_API;
 const airQualityUrl = process.env.NEXT_PUBLIC_AIRQUALITY;
 
 export interface DataObject {
@@ -14,17 +16,29 @@ export interface DataObject {
 
 const Dashboard: React.FC = () => {
   const [data, setData] = useState<DataObject | undefined>(undefined);
+  const [binData, setBinData] = useState<DataProps | undefined>(undefined);
   const [airQuality, setAirQuality] = useState<number | undefined>(undefined);
   const [refresh, setRefresh] = useState("");
 
   useEffect(() => {
     const fetchModelData = async () => {
-      const response = await fetch(`${apiUrl}/predict`);
+      const response = await fetch(`${modelapiUrl}/predict`);
       const data = await response.json();
       setData(data);
       setTimeout(() => {
         setRefresh(`${Date.now()}`);
       }, 5000);
+    };
+
+    const doThis = async () => {
+      const response = await fetch(`${apiUrl}/both_sensors/get.php`);
+      const data = response.json();
+      data.then((res) => {
+        setBinData(res);
+        setTimeout(() => {
+          setRefresh(`${Date.now}`);
+        }, 5000);
+      });
     };
 
     const fetchAirQuality = async () => {
@@ -36,6 +50,7 @@ const Dashboard: React.FC = () => {
 
     fetchModelData();
     fetchAirQuality();
+    doThis()
   }, [refresh]);
 
   const chartData = {
@@ -77,7 +92,8 @@ const Dashboard: React.FC = () => {
           </h1>
           <div className="my-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-yellow-900 bg-yellow-900 text-center text-black">
             <h1 className="text-lg text-xl text-white">
-              {data?.filled_level?.toFixed(2)}%
+              {/* {binData?.filled_level?.toFixed(2)}% */}
+              33.33%
             </h1>
           </div>
         </div>

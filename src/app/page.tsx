@@ -4,8 +4,8 @@ import Dashboard from "@/components/Dashboard";
 
 export const metadata: Metadata = {
   title:
-    "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Home for TailAdmin Dashboard Template",
+    "Letaher",
+  description: "Welcome to letaher, an Intelligent Waste Management System",
 };
 
 export default function Home() {
